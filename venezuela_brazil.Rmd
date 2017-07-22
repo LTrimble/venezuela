@@ -1,0 +1,81 @@
+```{r}
+library('wbstats')
+library('ggplot2')
+library('reshape2')
+```
+
+
+```{r}
+wbIndicator <- 'NY.GDP.PCAP.CD' #GDP per capita (current US$)
+venezuelaCountryCode <- 'VEN'
+brazilCountryCode <- 'BRA'
+sd = 1963
+ed = 2003
+```
+
+
+```{r}
+venezuelaGdpData <- wb(indicator = wbIndicator,
+                       country = c(venezuelaCountryCode),
+                       startdate = sd,
+                       enddate = ed)[,2:1]
+
+names(venezuelaGdpData)[names(venezuelaGdpData)=="value"] <- "Venezuela"
+venezuelaGdpData <- venezuelaGdpData[order(venezuelaGdpData$date),]
+```
+
+
+```{r}
+brazilGdpData <- wb(indicator = wbIndicator,
+                    country = c(brazilCountryCode),
+                    startdate = sd,
+                    enddate = ed)[,2:1]
+
+names(brazilGdpData)[names(brazilGdpData)=="value"] <- "Brazil"
+brazilGdpData <- brazilGdpData[order(brazilGdpData$date),]
+```
+
+
+```{r}
+gdpData <- data.frame(brazilGdpData, 
+                      Venezuela = venezuelaGdpData$Venezuela)
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+gdpDataMelt <- melt(gdpData, id = 'date')
+```
+
+
+```{r}
+gdpDataMelt <- melt(gdpData, id = 'date')
+names(gdpDataMelt)[names(gdpDataMelt) == 'value'] <- 'GDP'
+names(gdpDataMelt)[names(gdpDataMelt) == 'date'] <- 'Date'
+
+```
+
+
+```{r}
+plt <- ggplot(data = gdpDataMelt, 
+                aes(x = Date, 
+                    y = GDP, 
+                    group = variable, 
+                    colour = variable)) 
+plt <- plt + geom_line()
+plt <- plt + scale_colour_manual(values=c("red","green"))
+plt <- plt + scale_x_discrete(breaks = seq(sd,ed,by = 5))
+plt <- plt + theme(legend.position = c(.85, .2), 
+                   legend.background = element_blank(), 
+                   legend.title = element_blank())
+```
+
+
+```{r}
+plt
+```
+
